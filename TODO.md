@@ -79,20 +79,20 @@ Building TBHM requires a phased approach focusing on core infrastructure first, 
   - [x] Create AI-powered JS de-obfuscation module
 
 ### Phase 5: Vulnerability Automation & Heat Mapping (Month 5)
-- [ ] **5.1 Vulnerability Scanners**
-  - [ ] Integrate Nuclei as core scanning engine
-  - [ ] Develop custom Nuclei templates for common vulnerabilities
-  - [ ] Create templates for .git, config files, Swagger UI detection
+- [x] **5.1 Vulnerability Scanners**
+  - [x] Integrate Nuclei as core scanning engine
+  - [x] Develop custom Nuclei templates for common vulnerabilities
+  - [x] Create templates for .git, config files, Swagger UI detection
 
-- [ ] **5.2 Heat Mapping**
-  - [ ] Implement vulnerability scoring system
-  - [ ] Create AI agent for analyzing httpx responses
-  - [ ] Develop identification of high-risk entry points
+- [x] **5.2 Heat Mapping**
+  - [x] Implement vulnerability scoring system
+  - [x] Create AI agent for analyzing httpx responses
+  - [x] Develop identification of high-risk entry points
 
-- [ ] **5.3 Vulnerability Specific Modules**
-  - [ ] Build IDOR detection and testing automation
-  - [ ] Implement SSRF OOB testing with Interactor/Webhook.site
-  - [ ] Create ghauri wrapper for SQL injection testing
+- [x] **5.3 Vulnerability Specific Modules**
+  - [x] Build IDOR detection and testing automation
+  - [x] Implement SSRF OOB testing with Interactor/Webhook.site
+  - [x] Create ghauri wrapper for SQL injection testing
 
 ### Phase 6: Bypass & Exploitation Techniques (Month 6)
 - [ ] **6.1 Security Control Identification**
