@@ -67,16 +67,16 @@ Building TBHM requires a phased approach focusing on core infrastructure first, 
   - [x] Create service fingerprinting and analysis pipeline
 
 ### Phase 4: Content Discovery & JavaScript Deep-Dive (Month 4)
-- [ ] **4.1 Advanced Content Discovery**
-  - [ ] Integrate ffuf or feroxbuster for directory fuzzing
-  - [ ] Create dynamic wordlist generation based on tech stack
-  - [ ] Implement 403 bypass techniques (header manipulation)
+- [x] **4.1 Advanced Content Discovery**
+  - [x] Integrate ffuf or feroxbuster for directory fuzzing
+  - [x] Create dynamic wordlist generation based on tech stack
+  - [x] Implement 403 bypass techniques (header manipulation)
 
-- [ ] **4.2 JavaScript Pipeline**
-  - [ ] Integrate subjs, gau, and Waybackurls for JS extraction
-  - [ ] Implement LinkFinder for endpoint discovery
-  - [ ] Add SecretFinder for API key detection
-  - [ ] Create AI-powered JS de-obfuscation module
+- [x] **4.2 JavaScript Pipeline**
+  - [x] Integrate subjs, gau, and Waybackurls for JS extraction
+  - [x] Implement LinkFinder for endpoint discovery
+  - [x] Add SecretFinder for API key detection
+  - [x] Create AI-powered JS de-obfuscation module
 
 ### Phase 5: Vulnerability Automation & Heat Mapping (Month 5)
 - [ ] **5.1 Vulnerability Scanners**
