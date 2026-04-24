@@ -7,3 +7,6 @@ out/
 
 # Storybook
 storybook-static/
+
+# lib is not ignored
+!/frontend/src/lib
