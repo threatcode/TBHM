@@ -230,6 +230,44 @@ def scan_heat_mapping(
 
 
 @celery_app.task(bind=True)
+def scan_waf(self, target_id: str, url: str) -> Dict[str, Any]:
+    """
+    WAF detection task.
+    """
+    from ..exploit import run_waf_detection
+
+    logger.info(f"Starting WAF detection for {url}")
+
+    result = run_async(run_waf_detection(target_id, url))
+
+    logger.info(f"WAF detection completed: {result.get('waf', {}).get('waf_detected', False)}")
+    return result
+
+
+@celery_app.task(bind=True)
+def scan_dependency_confusion(
+    self,
+    target_id: str,
+    packages: list,
+    ecosystem: str = "npm",
+    internal_registry: str = None,
+) -> Dict[str, Any]:
+    """
+    Dependency confusion scan task.
+    """
+    from ..exploit import run_dependency_scan
+
+    logger.info(f"Starting dependency confusion scan for {len(packages)} packages")
+
+    result = run_async(run_dependency_scan(
+        target_id, packages, ecosystem, internal_registry
+    ))
+
+    logger.info(f"Dependency scan completed: {result.get('vulnerable', 0)} vulnerable")
+    return result
+
+
+@celery_app.task(bind=True)
 def run_scan(self, scan_id: str, scan_type: str, target: Dict[str, Any]) -> Dict[str, Any]:
     """
     Execute a generic scan task.
