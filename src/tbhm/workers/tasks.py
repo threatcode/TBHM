@@ -105,6 +105,36 @@ def run_recon_workflow(
 
 
 @celery_app.task(bind=True)
+def scan_port(self, target_id: str, hosts: list, ports: str = None, rate: int = 1000) -> Dict[str, Any]:
+    """
+    Port scanning scan task.
+    """
+    from ..recon import run_port_scan
+
+    logger.info(f"Starting port scan for {len(hosts)} hosts")
+
+    result = run_async(run_port_scan(target_id, hosts, ports, rate))
+
+    logger.info(f"Port scan completed: {result.get('open_ports', 0)} open ports")
+    return result
+
+
+@celery_app.task(bind=True)
+def scan_screenshots(self, target_id: str, urls: list) -> Dict[str, Any]:
+    """
+    Screenshot capture scan task.
+    """
+    from ..recon import run_screenshot_capture
+
+    logger.info(f"Starting screenshot capture for {len(urls)} URLs")
+
+    result = run_async(run_screenshot_capture(target_id, urls))
+
+    logger.info(f"Screenshot capture completed: {result.get('successful_captures', 0)} captures")
+    return result
+
+
+@celery_app.task(bind=True)
 def run_scan(self, scan_id: str, scan_type: str, target: Dict[str, Any]) -> Dict[str, Any]:
     """
     Execute a generic scan task.
