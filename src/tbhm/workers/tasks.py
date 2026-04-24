@@ -105,6 +105,36 @@ def run_recon_workflow(
 
 
 @celery_app.task(bind=True)
+def scan_directory(self, target_id: str, url: str, wordlist: str = None) -> Dict[str, Any]:
+    """
+    Directory fuzzing scan task.
+    """
+    from ..recon import run_directory_fuzz
+
+    logger.info(f"Starting directory fuzzing for {url}")
+
+    result = run_async(run_directory_fuzz(target_id, url, wordlist))
+
+    logger.info(f"Directory fuzz completed: {result.get('total', 0)} found")
+    return result
+
+
+@celery_app.task(bind=True)
+def scan_js_extraction(self, target_id: str, domain: str) -> Dict[str, Any]:
+    """
+    JavaScript extraction scan task.
+    """
+    from ..recon import run_js_extraction
+
+    logger.info(f"Starting JS extraction for {domain}")
+
+    result = run_async(run_js_extraction(target_id, domain))
+
+    logger.info(f"JS extraction completed: {result.get('js_files_count', 0)} files")
+    return result
+
+
+@celery_app.task(bind=True)
 def scan_port(self, target_id: str, hosts: list, ports: str = None, rate: int = 1000) -> Dict[str, Any]:
     """
     Port scanning scan task.
