@@ -3,16 +3,25 @@ Scan management endpoints.
 """
 
 import uuid
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from ...deps import get_db
 from tbhm.crud import crud_scan
 from tbhm.schemas import ScanCreate, ScanResponse, ScanUpdate
+from tbhm.workers import tasks
 
 router = APIRouter()
+
+
+class ScanTriggerRequest(BaseModel):
+    """Request to trigger a scan."""
+    target_id: str
+    scan_type: str
+    options: Optional[dict] = {}
 
 
 @router.get("/", response_model=List[ScanResponse])
@@ -60,6 +69,47 @@ async def create_scan(
     """Create a new scan."""
     scan = await crud_scan.create_scan(db, scan_in)
     return scan
+
+
+@router.post("/trigger", status_code=status.HTTP_202_ACCEPTED)
+async def trigger_scan(
+    request: ScanTriggerRequest,
+    db: AsyncSession = Depends(get_db),
+):
+    """Trigger a vulnerability scan."""
+    target_id = request.target_id
+    options = request.options or {}
+
+    result = _execute_scan_task(request.scan_type, target_id, options)
+
+    return {
+        "task_id": result.id,
+        "status": "started",
+        "scan_type": request.scan_type,
+    }
+
+
+def _execute_scan_task(scan_type: str, target_id: str, options: dict):
+    """Execute the appropriate scan task based on type."""
+    endpoints = options.get("endpoints", [])
+    token = options.get("token")
+    token_type = options.get("token_type", "bearer")
+    findings = options.get("findings", [])
+    context = options.get("context")
+
+    if scan_type == "sqli":
+        return tasks.scan_sqli.delay(target_id, endpoints)
+    elif scan_type == "cmdi":
+        return tasks.scan_cmdi.delay(target_id, endpoints)
+    elif scan_type == "authenticated":
+        return tasks.scan_authenticated.delay(target_id, endpoints, token, token_type)
+    elif scan_type == "prioritize":
+        return tasks.prioritize_findings.delay(target_id, findings, context)
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown scan type: {scan_type}"
+        )
 
 
 @router.patch("/{scan_id}", response_model=ScanResponse)
