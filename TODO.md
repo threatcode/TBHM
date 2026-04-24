@@ -95,15 +95,15 @@ Building TBHM requires a phased approach focusing on core infrastructure first, 
   - [x] Create ghauri wrapper for SQL injection testing
 
 ### Phase 6: Bypass & Exploitation Techniques (Month 6)
-- [ ] **6.1 Security Control Identification**
-  - [ ] Integrate wafw00f for WAF detection
-  - [ ] Implement origin IP discovery behind WAFs
-  - [ ] Create bypass techniques for common WAFs
+- [x] **6.1 Security Control Identification**
+  - [x] Integrate wafw00f for WAF detection
+  - [x] Implement origin IP discovery behind WAFs
+  - [x] Create bypass techniques for common WAFs
 
-- [ ] **6.2 Advanced Fuzzing**
-  - [ ] Implement Backslash Powered Scanner logic
-  - [ ] Create dependency confusion scanning module
-  - [ ] Develop novel injection point identification
+- [x] **6.2 Advanced Fuzzing**
+  - [x] Implement Backslash Powered Scanner logic
+  - [x] Create dependency confusion scanning module
+  - [x] Develop novel injection point identification
 
 ### Phase 7: Dashboard & AI Chat Interface (Month 6+)
 - [ ] **7.1 Automated Reporting**
