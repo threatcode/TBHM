@@ -165,6 +165,71 @@ def scan_screenshots(self, target_id: str, urls: list) -> Dict[str, Any]:
 
 
 @celery_app.task(bind=True)
+def scan_vulnerabilities(self, target_id: str, targets: list) -> Dict[str, Any]:
+    """
+    Vulnerability scanning task using Nuclei.
+    """
+    from ..vuln import run_vuln_scan
+
+    logger.info(f"Starting vulnerability scan for {len(targets)} targets")
+
+    result = run_async(run_vuln_scan(target_id, targets))
+
+    logger.info(f"Vulnerability scan completed: {result.get('total', 0)} found")
+    return result
+
+
+@celery_app.task(bind=True)
+def scan_idor(self, target_id: str, endpoints: list, auth_token: str = None) -> Dict[str, Any]:
+    """
+    IDOR detection task.
+    """
+    from ..vuln import run_idor_test
+
+    logger.info(f"Starting IDOR test for {len(endpoints)} endpoints")
+
+    result = run_async(run_idor_test(target_id, endpoints, auth_token))
+
+    logger.info(f"IDOR test completed: {result.get('vulnerabilities', 0)} found")
+    return result
+
+
+@celery_app.task(bind=True)
+def scan_ssrf(self, target_id: str, endpoints: list, webhook_url: str = None) -> Dict[str, Any]:
+    """
+    SSRF testing task.
+    """
+    from ..vuln import run_ssrf_test
+
+    logger.info(f"Starting SSRF test for {len(endpoints)} endpoints")
+
+    result = run_async(run_ssrf_test(target_id, endpoints, webhook_url))
+
+    logger.info(f"SSRF test completed: {result.get('vulnerable', 0)} found")
+    return result
+
+
+@celery_app.task(bind=True)
+def scan_heat_mapping(
+    self,
+    target_id: str,
+    vuln_results: dict,
+    subdomain_data: list,
+) -> Dict[str, Any]:
+    """
+    Generate vulnerability heat map.
+    """
+    from ..vuln import run_heat_mapping
+
+    logger.info(f"Generating heat map for target {target_id}")
+
+    result = run_async(run_heat_mapping(target_id, vuln_results, subdomain_data))
+
+    logger.info(f"Heat map generated: risk score {result.get('risk_score', 0)}")
+    return result
+
+
+@celery_app.task(bind=True)
 def run_scan(self, scan_id: str, scan_type: str, target: Dict[str, Any]) -> Dict[str, Any]:
     """
     Execute a generic scan task.
