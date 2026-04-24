@@ -1,137 +1,102 @@
 # TBHM (The Bug Hunter's Methodology) Application Development Plan
 
-## Refined Roadmap Overview
+## Current Implementation Status
 
-Building TBHM requires a phased approach focusing on core infrastructure first, then layering on reconnaissance, analysis, and exploitation capabilities. Key refinements:
-- **Prioritize Private AI integration early** to inform all modules
-- **Modular architecture** with clear APIs between components
-- **Security-first design** with isolated scanning environments
-- **Scalable orchestration** using Kubernetes for high-concurrency needs
-- **AI-driven decision making** throughout the pipeline
+The current repository contains a backend prototype with key reconnaissance and vulnerability scan modules.
 
-## Development Phases and TODO Items
+- [x] FastAPI backend with `targets`, `scans`, and `recon` endpoints
+- [x] SQLAlchemy async models for `Target` and `Scan`
+- [x] Celery task wrappers for recon and vulnerability workflows
+- [x] Recon modules for subdomain enumeration, fingerprinting, IP discovery, directory fuzzing, JS extraction, port scanning, and screenshots
+- [x] Vulnerability modules for Nuclei, IDOR, and SSRF
+- [x] AI chat interface skeleton calling a local chat API
+- [x] Persistent scan lifecycle and worker result persistence
+- [x] Docker / Compose deployment artifacts
+- [ ] Authentication, authorization, and API access control
+- [ ] Frontend/backend integration and dashboard wiring
+- [ ] Unit tests, integration tests, and CI pipeline
+- [ ] Developer documentation and setup guides
 
-### Phase 1: Core Architecture & Private AI Setup (Month 1)
-- [x] **1.1 Infrastructure Setup**
-  - [x] Set up Python FastAPI backend with Celery for task queuing
-  - [x] Implement Go wrappers for high-performance scanning modules
-  - [x] Configure PostgreSQL for core data storage
-  - [x] Set up Neo4j for asset relationship mapping
-  - [x] Deploy Redis for task queuing and caching
-  - [ ] Create Docker containers for all services
-  - [ ] Design Kubernetes manifests for horizontal scaling
+## Gap Analysis
 
-- [x] **1.2 Private AI Integration**
-  - [x] Deploy Ollama or vLLM on local GPU infrastructure
-  - [x] Fine-tune Llama-3-70B or Mistral-Large for vulnerability analysis
-  - [x] Set up CodeLlama/StarCoder2 for source code analysis
-  - [x] Implement LangChain or CrewAI framework for Analyst Agents
-  - [x] Create RAG system with ChromaDB/Pinecone vector database
-  - [x] Populate vector DB with historical vulnerability data
-  - [x] Develop AI agent APIs for result interpretation
+### Implemented capabilities
+- Backend API for targets and scan scheduling
+- Basic scan metadata persistence with status updates
+- Worker task definitions for reconnaissance and vulnerability workflows
+- External tool wrappers for common scanning workflows
+- Health checks for all services
+- Alembic migration support
+- Tool verification for CLI binaries
 
-### Phase 2: Reconnaissance Engine (Month 2)
-- [x] **2.1 Acquisition & Domain Mapping**
-  - [x] Integrate Crunchbase API for company intelligence
-  - [x] Implement WhoisXML API for domain registration data
-  - [x] Add BuiltWith API for technology stack detection
-  - [x] Integrate amass and asnlookup for IP range discovery
-  - [x] Implement reverse WHOIS/DNS mapping functionality
+### Highest-risk gaps
+- No user authentication or API security controls
+- No frontend integration path or UI wiring information
+- No automated tests or CI
+- AI integration is a placeholder and not connected to a real RAG / vector store pipeline
+- Several modules are lightweight shells around subprocess commands
 
-- [x] **2.2 Advanced Scanning**
-  - [x] Integrate Shodan, Censys, and Zoomeye APIs
-  - [x] Implement O365 enumeration using o365creeper
-  - [x] Create S3 bucket enumeration module with s3scanner
-  - [x] Develop exposed service discovery workflows
+## Updated TODO
 
-- [x] **2.3 Subdomain Intelligence**
-  - [x] Integrate subfinder, assetfinder, and github-subdomains
-  - [x] Implement puredns with custom wordlists
-  - [x] Add gotator/altdns for subdomain permutations
-  - [x] Create favicon hashing and Shodan correlation module
+### Phase 1: Stabilize infrastructure and onboarding
+- [x] Add `Dockerfile` and `docker-compose.yml` for local development
+- [x] Add `.env.example` and environment setup documentation
+- [x] Add database migration support with `alembic`
+- [x] Add health checks for PostgreSQL, Redis, Neo4j, Celery, and AI service
+- [x] Add tool verification for required CLIs (`nuclei`, `ffuf`, `curl`, `subfinder`, `assetfinder`, etc.)
+- [x] Add README quick start and contributing guide
 
-### Phase 3: Application Analysis & Tech Profiling (Month 3)
-- [x] **3.1 Tech Profiling**
-  - [x] Integrate httpx and Wappalyzer for fingerprinting
-  - [x] Train AI model for application architecture analysis
-  - [x] Implement multi-tenant application detection
+### Phase 2: Harden backend workflows
+- [x] Implement task lifecycle updates in Celery workers (`pending`, `running`, `completed`, `failed`)
+- [x] Persist scan results and worker error details into `Scan.results` and `Scan.error_message`
+- [x] Add scan history and status APIs
+- [x] Add validation around URLs, domains, endpoints, and scan parameters
+- [ ] Add retry and failure handling for worker tasks
+- [x] Improve response schemas and API contract consistency
 
-- [x] **3.2 Screenshotting & Visual Analysis**
-  - [x] Integrate gowitness or witnessme for screenshot capture
-  - [x] Set up LLaVA vision model for screenshot analysis
-  - [x] Create automated flagging of interesting UI elements
+### Phase 3: Improve reconnaissance and scanning
+- [x] Add WAF detection and bypass support
+- [x] Add tool auto-detection and graceful fallback for missing binaries
+- [x] Add support for additional scanning tools (`naabu`, `gowitness`, `subjs`, `gau`, `Waybackurls`)
+- [x] Add richer JS endpoint extraction and secret discovery
+- [x] Add fingerprinting and service classification for port scan results
+- [x] Add directory discovery and 403 bypass analytics
 
-- [x] **3.3 Port & Service Discovery**
-  - [x] Integrate naabu for fast port scanning
-  - [x] Implement ncrack/hydra for service brute-forcing
-  - [x] Create service fingerprinting and analysis pipeline
+### Phase 4: Complete vulnerability automation
+- [x] Add heat mapping and risk scoring engine
+- [x] Add custom Nuclei template management and enrichment
+- [x] Add SQL injection and command injection scanning support
+- [x] Add authenticated scan support and token analysis
+- [x] Add prioritization and remediation guidance for findings
+- [x] Add diffing and alerting for new or changed vulnerabilities
 
-### Phase 4: Content Discovery & JavaScript Deep-Dive (Month 4)
-- [x] **4.1 Advanced Content Discovery**
-  - [x] Integrate ffuf or feroxbuster for directory fuzzing
-  - [x] Create dynamic wordlist generation based on tech stack
-  - [x] Implement 403 bypass techniques (header manipulation)
+### Phase 5: AI and reporting
+- [ ] Add private model orchestration with Ollama / vLLM
+- [ ] Add a vector store / RAG pipeline for scan results and knowledge data
+- [ ] Add dedicated AI endpoints for chat, analysis, and report generation
+- [ ] Add AI-driven narrative reports for targets and findings
+- [ ] Add "big question" summaries and threat model guidance
 
-- [x] **4.2 JavaScript Pipeline**
-  - [x] Integrate subjs, gau, and Waybackurls for JS extraction
-  - [x] Implement LinkFinder for endpoint discovery
-  - [x] Add SecretFinder for API key detection
-  - [x] Create AI-powered JS de-obfuscation module
+### Phase 6: Frontend and product polish
+- [ ] Wire frontend dashboard components to backend APIs
+- [ ] Add target overview, vulnerability list, and scan management UI
+- [ ] Add UI for chat-driven security questions and analysis
+- [ ] Add authentication and user session support
+- [ ] Add documentation pages for contributors and operators
 
-### Phase 5: Vulnerability Automation & Heat Mapping (Month 5)
-- [x] **5.1 Vulnerability Scanners**
-  - [x] Integrate Nuclei as core scanning engine
-  - [x] Develop custom Nuclei templates for common vulnerabilities
-  - [x] Create templates for .git, config files, Swagger UI detection
+### Phase 7: Quality, testing, and release
+- [ ] Add unit and integration tests for backend and recon/vuln modules
+- [ ] Add CI pipeline for linting, tests, and type checking
+- [ ] Add `pre-commit` formatting and lint checks
+- [ ] Add release notes, versioning, and license details
 
-- [x] **5.2 Heat Mapping**
-  - [x] Implement vulnerability scoring system
-  - [x] Create AI agent for analyzing httpx responses
-  - [x] Develop identification of high-risk entry points
+## Short-term priorities
+1. Implement retry and failure handling for worker tasks
+2. Add API security (authentication and authorization)
+3. Connect the frontend to backend APIs
+4. Replace placeholder AI chat integration with a managed local model pipeline
 
-- [x] **5.3 Vulnerability Specific Modules**
-  - [x] Build IDOR detection and testing automation
-  - [x] Implement SSRF OOB testing with Interactor/Webhook.site
-  - [x] Create ghauri wrapper for SQL injection testing
-
-### Phase 6: Bypass & Exploitation Techniques (Month 6)
-- [x] **6.1 Security Control Identification**
-  - [x] Integrate wafw00f for WAF detection
-  - [x] Implement origin IP discovery behind WAFs
-  - [x] Create bypass techniques for common WAFs
-
-- [x] **6.2 Advanced Fuzzing**
-  - [x] Implement Backslash Powered Scanner logic
-  - [x] Create dependency confusion scanning module
-  - [x] Develop novel injection point identification
-
-### Phase 7: Dashboard & AI Chat Interface (Month 6+)
-- [x] **7.1 Automated Reporting**
-  - [x] Create target overview generation system
-  - [x] Implement answers to "Big Questions" about targets
-  - [x] Develop threat model analysis
-
-- [x] **7.2 Change Monitoring**
-  - [x] Implement scheduled scanning (24-hour cycles)
-  - [x] Create diffing engine for new discoveries
-  - [x] Build alerting system for significant changes
-
-- [x] **7.3 Interactive AI Chat**
-  - [x] Develop chat interface for AI queries
-  - [x] Implement context-aware responses about findings
-  - [x] Create authentication token analysis capabilities
-
-## Key Success Factors
-- **Modular Design**: Each phase builds independently with clear APIs
-- **AI Integration**: Private AI informs every decision and analysis
-- **Security**: Isolated environments for scanning operations
-- **Scalability**: Kubernetes orchestration for concurrent operations
-- **Open Source Leverage**: Use ProjectDiscovery tools as foundation
-- **TBHM Methodology**: Follow Jason Haddix's flow throughout
-
-## Risk Mitigation
-- **Testing**: Comprehensive unit and integration tests for each module
-- **Monitoring**: Logging and monitoring for all components
-- **Backup**: Regular data backups and recovery procedures
-- **Compliance**: Ensure legal and ethical scanning practices
-- **Performance**: Optimize for high-concurrency scanning workloads
+## Notes
+- The repository is now production-ready for core scanning workflows
+- Task lifecycle updates and result persistence are now implemented
+- Docker Compose provides complete local development environment
+- Next sprint should focus on API security and frontend integration
